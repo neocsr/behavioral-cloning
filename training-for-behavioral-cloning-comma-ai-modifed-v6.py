@@ -71,11 +71,11 @@ df.dtypes
 plt.figure(figsize=(4, 4))
 plt.subplot(211)
 df.angle.hist(bins=40)
-plt.title('Steering Angle')
+plt.title('Steering Angle', fontsize=10)
 plt.subplot(212)
 df.angle.hist(bins=40)
-plt.xlabel('Steering Angle (y-zoom)')
-plt.ylim((0, 100))
+plt.xlabel('Steering Angle (y-zoom)', fontsize=10)
+plt.ylim((0, 500))
 plt.show()
 
 
@@ -91,7 +91,7 @@ center_img = Image.open(df.center[idx])
 right_img = Image.open(df.right[idx])
 angle_value = df.angle[idx]
 
-plt.figure(figsize=(8, 3))
+plt.figure(figsize=(8, 2))
 plt.subplot(1, 3, 1)
 plt.title('Left', fontsize=10)
 plt.grid('off')
@@ -107,7 +107,7 @@ plt.title('Right', fontsize=10)
 plt.grid('off')
 plt.axis('off')
 plt.imshow(right_img)
-plt.suptitle('Steering angle: %s' % angle_value, fontsize=10)
+plt.suptitle('Steering angle: %s' % angle_value, fontsize=12)
 plt.show()
 
 
@@ -144,6 +144,7 @@ data = df[(df.angle != 0)]
 
 plt.figure(figsize=(4, 2))
 data.angle.hist(bins=40)
+plt.title('Steering Angle Distribution without Zero Values', fontsize=10)
 plt.show()
 
 
@@ -319,7 +320,8 @@ def build_model():
 # 
 # Another important feature that improved dramatically the performance of the model was cropping.
 # 
-# I removed the top 80 pixel rows and the bottom 20 pixel rows.
+# I removed the top 80 pixel rows and the bottom 20 pixel rows. This to remove the scenary (sky, trees, mountains on the top of the image and the car hood on the bottom of the image) and allow the model to focus more on the road itself.
+# 
 # That reduced the size of the image from **160x320** pixels to **60x320** pixels.
 
 # In[15]:
@@ -457,6 +459,7 @@ image.shape
 plt.figure(figsize=(3, 2))
 plt.imshow(augment_translation(image, data.angle.values[0])[0])
 plt.axis('off')
+plt.title('Augmentation - Translation', fontsize=10)
 plt.show()
 
 
@@ -470,6 +473,7 @@ crop_and_resize(image).shape
 plt.figure(figsize=(3, 2))
 plt.imshow(augment_shadow(image))
 plt.axis('off')
+plt.title('Augmentation - Shadows', fontsize=10)
 plt.show()
 
 
@@ -478,6 +482,7 @@ plt.show()
 plt.figure(figsize=(3, 2))
 plt.imshow(augment_rotation(image, 0)[0])
 plt.axis('off')
+plt.title('Augmentation - Rotation', fontsize=10)
 plt.show()
 
 
@@ -486,6 +491,7 @@ plt.show()
 plt.figure(figsize=(3, 2))
 plt.imshow(crop_and_resize(image))
 plt.axis('off')
+plt.title('Cropping and Resize', fontsize=10)
 plt.show()
 
 
@@ -681,14 +687,15 @@ for i in range(30):
 # In[39]:
 
 batches_plot = plt.subplot(211)
-batches_plot.set_title('Training Loss in Batches')
+batches_plot.set_title('Training Loss in Batches', fontsize=10)
 batches_plot.plot(batch_losses, 'olive')
+batches_plot.set_ylim([0, 0.12])
 
 epochs_plot = plt.subplot(212)
-epochs_plot.set_title('Training Loss and Validation Loss in Epochs')
+epochs_plot.set_title('Training Loss and Validation Loss in Epochs', fontsize=10)
 epochs_plot.plot(losses, 'cornflowerblue', label='Training')
 epochs_plot.plot(val_losses, 'salmon', label='Validation')
-epochs_plot.set_ylim([0, 0.06])
+epochs_plot.set_ylim([0, 0.12])
 epochs_plot.legend(loc=1, prop={'size': 8})
 plt.tight_layout()
 plt.show()
@@ -751,38 +758,48 @@ pred_zero = model.predict_generator(
 
 # In[45]:
 
-plt.subplot(211)
-plt.hist(pos_angles.angle.values)
-plt.xlim((-.2, 1.))
-plt.subplot(212)
-plt.hist(pred_pos)
-plt.xlim((-.2, 1.))
+fig_real = plt.subplot(211)
+fig_real.hist(pos_angles.angle.values)
+fig_real.set_xlim((-.2, 1.))
+fig_real.set_title('Testing Values (Right Turn)', fontsize=10)
+
+fig_pred = plt.subplot(212)
+fig_pred.hist(pred_pos)
+fig_pred.set_xlim((-.2, 1.))
+fig_pred.set_title('Predicted Values', fontsize=10)
+
+plt.tight_layout()
 plt.show()
 
 
 # In[46]:
 
-plt.subplot(211)
-plt.hist(neg_angles.angle.values)
-plt.xlim((-1., .2))
-plt.subplot(212)
-plt.hist(pred_neg)
-plt.xlim((-1., .2))
+fig_real = plt.subplot(211)
+fig_real.hist(neg_angles.angle.values)
+fig_real.set_xlim((-1., .2))
+fig_real.set_title('Testing Values (Left Turn)', fontsize=10)
+
+fig_pred = plt.subplot(212)
+fig_pred.hist(pred_neg)
+fig_pred.set_xlim((-1., .2))
+fig_pred.set_title('Predicted Values', fontsize=10)
+
+plt.tight_layout()
 plt.show()
 
 
 # In[47]:
 
-plt.subplot(211)
-plt.hist(zero_angles.angle.values)
-plt.xlim((-1., 1.))
-plt.subplot(212)
-plt.hist(pred_zero)
-plt.xlim((-1., 1.))
+fig_real = plt.subplot(211)
+fig_real.hist(zero_angles.angle.values)
+fig_real.set_xlim((-1., 1.))
+fig_real.set_title('Testing Values (Straight)', fontsize=10)
+
+fig_pred = plt.subplot(212)
+fig_pred.hist(pred_zero)
+fig_pred.set_xlim((-1., 1.))
+fig_pred.set_title('Predicted Values', fontsize=10)
+
+plt.tight_layout()
 plt.show()
-
-
-# In[ ]:
-
-
 
